@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReallyAnarchy — MineRAnarchy</title>
+<style>
+:root{--bg:#182233;--nav:#111a28;--card:#222d40;--card2:#263247;--line:#303d53;--text:#e8edf5;--muted:#8792a5;--blue:#1688ff;--blue2:#0874df;--green:#48cf8a}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px Arial,system-ui,sans-serif}
+body:before{content:"";position:fixed;inset:0 0 auto;height:210px;background:linear-gradient(#07111dcc,#14223500),url('https://images.unsplash.com/photo-1600861194942-f883de0dfe96?auto=format&fit=crop&w=1600&q=70') center/cover;opacity:.38;z-index:-1}
+button,input,select,textarea{font:inherit}
+.top{height:60px;background:#101927ef;border-bottom:1px solid #273449;display:flex;align-items:center}
+.topin{width:min(1180px,94%);margin:auto;display:flex;align-items:center;gap:28px}
+.logo{font-weight:900;font-size:17px;display:flex;align-items:center;gap:9px}
+.logoMark{width:31px;height:31px;border-radius:7px;background:linear-gradient(145deg,#18a3ff,#1671df);display:grid;place-items:center}
+.topnav{display:flex;gap:7px}
+.topnav button{background:transparent;border:0;color:#8f9aac;padding:10px 12px;border-bottom:2px solid transparent}
+.topnav button.active,.topnav button:hover{color:#fff;border-color:#1688ff}
+.hamb{margin-left:auto;background:transparent;border:0;color:#ddd;font-size:20px}
+.wrap{width:min(1000px,92%);margin:20px auto 70px}
+.serverHead{background:#202b3d;border:1px solid #2f3b4e;border-radius:7px;padding:20px 22px 0;box-shadow:0 12px 35px #08101d55}
+.serverTitle{display:flex;align-items:center;gap:10px}
+.serverTitle h1{font-size:17px;margin:0}
+.serverTitle .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.addr{color:#7f899b;font-size:12px;margin-top:7px}
+.serverStatus{color:#929bad;font-size:12px;margin:8px 0 18px}
+.tabs{display:flex;gap:22px;overflow:auto}
+.tabs button{background:0;border:0;color:#8b96a8;padding:12px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.active{color:#1688ff;border-color:#1688ff}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--card);border:1px solid #2e3a4d;border-radius:7px;margin-top:8px;box-shadow:0 7px 22px #0b122055}
+.card h2{font-size:14px;margin:0;padding:18px 20px;border-bottom:1px solid var(--line)}
+.console{height:460px;padding:15px 17px;overflow:auto;background:#202b3d;font:12px/1.42 Consolas,monospace;color:#d4dbe6;white-space:pre-wrap}
+.console .warn{color:#e9db82}
+.cmd{display:flex;background:#1b2535;border-top:1px solid #344055;padding:10px;gap:8px}
+.cmd input{flex:1;background:#202c3f;border:1px solid #3a4659;color:#fff;border-radius:4px;padding:10px;outline:none}
+.blue{background:var(--blue);border:0;color:#fff;border-radius:4px;padding:9px 16px}
+.blue:hover{background:var(--blue2)}
+.plan{display:flex;align-items:center;gap:14px;padding:15px 18px}
+.cube{width:48px;height:48px;background:linear-gradient(135deg,#69a8ef,#2d5c91);display:grid;place-items:center;border-radius:5px;font-size:24px}
+.plan b{display:block}
+.plan small{color:#8b95a6;display:block;margin-top:4px}
+.planActions{margin-left:auto;display:flex;gap:8px}
+.mutedBtn{background:#263247;color:#aab3c1;border:1px solid #344158;border-radius:4px;padding:7px 11px}
+.resources{padding:0 20px 18px}
+.resource{display:grid;grid-template-columns:90px 1fr 100px;gap:10px;padding:8px 0;color:#9ba5b6}
+.resource strong{color:#dce2eb;text-align:right;font-weight:400}
+.chart{height:250px;margin:0 15px 15px;background:#222d40;position:relative;overflow:hidden}
+.chart:after{content:"";position:absolute;left:8%;right:2%;bottom:25px;height:80px;border-bottom:2px solid #1586ff;clip-path:polygon(0 88%,8% 82%,16% 89%,25% 87%,35% 91%,44% 83%,55% 89%,66% 88%,75% 88%,84% 83%,92% 87%,100% 84%,100% 100%,0 100%);background:#1586ff12}
+.filebar{padding:12px 18px;color:#8893a5;display:flex;justify-content:space-between}
+.file{padding:14px 18px;border-top:1px solid #303c50;display:flex;justify-content:space-between}
+.file:hover{background:#263247}
+.drop{margin:12px 18px;padding:35px;text-align:center;border:1px dashed #53647d;border-radius:5px;color:#9da7b7}
+.empty{text-align:center;padding:65px;color:#8993a4}
+.settings{padding:20px;display:grid;gap:14px}
+.settings label{display:grid;gap:7px;color:#9ba4b3}
+.settings input,.settings textarea,.settings select{background:#1a2434;color:#eee;border:1px solid #3a4659;padding:10px;border-radius:4px}
+@media(max-width:700px){
+.top{height:54px}
+.topin{width:94%}
+.topnav{display:none}
+.wrap{width:94%;margin-top:10px}
+.serverHead{padding:16px 15px 0}
+.tabs{gap:18px}
+.tabs button{font-size:12px}
+.console{height:430px;font-size:10.5px;padding:12px}
+.cmd{position:sticky;bottom:0}
+.cmd .blue{padding:8px 11px}
+.plan{padding:13px}
+.resources{padding:0 15px 15px}
+.resource{grid-template-columns:72px 1fr 80px;font-size:12px}
+.chart{height:220px}
+.serverTitle h1{font-size:16px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+<div class="topin">
+
+<div class="logo">
+<span class="logoMark">RA</span>
+MineRAnarchy
+</div>
+
+<nav class="topnav">
+<button class="active" data-tab="console">Консоль</button>
+<button data-tab="files">Файлы</button>
+<button data-tab="install">Автоустановка</button>
+<button data-tab="games">Игры</button>
+<button data-tab="db">Базы данных</button>
+<button data-tab="more">Ещё</button>
+</nav>
+
+<button class="hamb">☰</button>
+
+</div>
+</header>
+
+<main class="wrap">
+
+<section class="serverHead">
+
+<div class="serverTitle">
+<span class="dot"></span>
+<h1>ReallyAnarchy</h1>
+</div>
+
+<div class="addr">◉ reallyanarchy.minerent.io</div>
+<div class="serverStatus">◆ Работает⌄</div>
+
+<div class="tabs">
+<button class="active" data-tab="console">Консоль</button>
+<button data-tab="files">Файлы</button>
+<button data-tab="install">Автоустановка</button>
+<button data-tab="games">Игры</button>
+<button data-tab="db">Базы данных</button>
+<button data-tab="more">...</button>
+</div>
+
+</section>
+
+<section id="console" class="page active">
+
+<div class="card">
+
+<h2>Консоль сервера</h2>
+
+<div class="console" id="log">
+<span class="warn">statistic_mob_kills progress</span>
+
+Reminder: Not all placeholders support updating offline players, so if nothing is updated, it could be the fault of the placeholder, not ajleaderboards.
+
+[13:06:17 INFO]: Started update of 28 players!
+
+You can check the progress by either checking the console, or running /ajlb updatealloffline
+
+<span class="warn">statistic_player_kills progress</span>
+
+Reminder: Not all placeholders support updating offline players.
+
+[13:06:17 INFO]: Finished updating all offline players for statistic_player_kills in 0.01s
+
+[13:06:17 INFO]: [ajLeaderboards] [OfflineUpdater] vault_eco_balance_fixed: Finished in 0.02s
+
+[13:06:17 INFO]: Finished updating all offline players for playerpoints_points in 0.0s
+
+[13:06:17 INFO]: [ajLeaderboards] [OfflineUpdater] statistic_time_played: Finished in 0.01s
+
+[13:06:17 INFO]: Finished updating all offline players for statistic_time_played in 0.01s
+
+[13:06:17 INFO]: [Server thread/INFO]: Done (2.04s)! For help, type "help"
+</div>
+
+<form class="cmd" id="cmd">
+<input placeholder="Введите команду...">
+<button class="blue">Отправить ↵</button>
+</form>
+
+</div>
+
+<div class="card plan">
+
+<div class="cube">▦</div>
+
+<div>
+<b>Тариф «Изумрудный»</b>
+<small>Оплачено до 26.10.2026</small>
+</div>
+
+<div class="planActions">
+<button class="mutedBtn">Продлить</button>
+<button class="mutedBtn">Улучшить</button>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Использование ресурсов</h2>
+
+<div class="resources">
+
+<div class="resource">
+<span>Время работы</span>
+<strong>13ч 8м 29с</strong>
+</div>
+
+<div class="resource">
+<span>CPU</span>
+<strong>2.49% / 300%</strong>
+</div>
+
+<div class="resource">
+<span>RAM</span>
+<strong>2.78ГБ / 16ГБ</strong>
+</div>
+
+<div class="resource">
+<span>Диск</span>
+<strong>3.43ГБ / 60ГБ</strong>
+</div>
+
+</div>
+</div>
+
+<div class="card">
+<h2>Загруженность процессора</h2>
+<div class="chart"></div>
+</div>
+
+<div class="card">
+<h2>Использование RAM</h2>
+<div class="chart"></div>
+</div>
+
+</section>
+
+<section id="files" class="page">
+
+<div class="card">
+
+<h2>Файлы сервера</h2>
+
+<div class="drop" id="drop">
+
+Перетащите файлы сюда
+<br>
+<small>или выберите их на устройстве</small>
+<br><br>
+
+<button class="blue" id="upload">
+Загрузить файлы
+</button>
+
+<input id="fileInput" type="file" multiple hidden>
+
+</div>
+
+<div class="filebar">
+<span>Имя</span>
+<span>Размер</span>
+</div>
+
+<div id="fileList"></div>
+
+</div>
+
+</section>
+
+<section id="install" class="page">
+
+<div class="card">
+
+<h2>Автоустановка</h2>
+
+<div class="empty">
+
+Выберите ядро, версию Minecraft и установите сервер в несколько кликов.
+
+</div>
+
+</div>
+
+</section>
+
+<section id="games" class="page">
+
+<div class="card">
+
+<h2>Игры</h2>
+
+<div class="empty">
+Minecraft · Terraria · другие игры
+</div>
+
+</div>
+
+</section>
+
+<section id="db" class="page">
+
+<div class="card">
+
+<h2>Базы данных</h2>
+
+<div class="empty">
+
+Баз данных пока нет.
+<br><br>
+
+<button class="blue">
+Создать базу
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="more" class="page">
+
+<div class="card">
+
+<h2>Настройки сервера</h2>
+
+<div class="settings">
+
+<label>
+Название
+<input value="ReallyAnarchy">
+</label>
+
+<label>
+Адрес
+<input value="reallyanarchy.minerent.io">
+</label>
+
+<label>
+Описание
+<textarea>Мой Minecraft сервер</textarea>
+</label>
+
+<button class="blue">
+Сохранить
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<script>
+
+const pages=[...document.querySelectorAll('.page')];
+
+const tabs=[...document.querySelectorAll('[data-tab]')];
+
+function show(id){
+
+pages.forEach(p=>{
+p.classList.toggle('active',p.id===id);
+});
+
+tabs.forEach(t=>{
+t.classList.toggle('active',t.dataset.tab===id);
+});
+
+}
+
+tabs.forEach(t=>{
+t.onclick=()=>show(t.dataset.tab);
+});
+
+const files=[
+'server.properties',
+'paper.jar',
+'plugins/',
+'world/',
+'eula.txt'
+];
+
+function render(){
+
+document.getElementById('fileList').innerHTML=
+
+files.map((x,i)=>`
+
+<div class="file">
+
+<span>▤ ${x}</span>
+
+<span>
+${x.endsWith('/')
+?'Папка'
+:i
+?Math.round(Math.random()*40+1)+' KB'
+:'12 KB'}
+</span>
+
+</div>
+
+`).join('');
+
+}
+
+render();
+
+document.getElementById('upload').onclick=()=>{
+
+document.getElementById('fileInput').click();
+
+};
+
+document.getElementById('fileInput').onchange=e=>{
+
+[...e.target.files].forEach(f=>{
+files.push(f.name);
+});
+
+render();
+
+};
+
+const drop=document.getElementById('drop');
+
+drop.ondragover=e=>{
+e.preventDefault();
+};
+
+drop.ondrop=e=>{
+
+e.preventDefault();
+
+[...e.dataTransfer.files].forEach(f=>{
+files.push(f.name);
+});
+
+render();
+
+};
+
+document.getElementById('cmd').onsubmit=e=>{
+
+e.preventDefault();
+
+const i=e.target.querySelector('input');
+
+if(i.value.trim()){
+
+document.getElementById('log').innerHTML+=
+`<br>[13:09:00 INFO]: &gt; ${i.value}`;
+
+i.value='';
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
